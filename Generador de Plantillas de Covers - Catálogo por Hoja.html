@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Plantillas de Covers - Catálogo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p { color: #888; margin-top: 5px; font-size: 0.9rem; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr 400px;
+            gap: 15px;
+        }
+
+        @media (max-width: 1400px) {
+            .main-layout {
+                grid-template-columns: 280px 1fr;
+            }
+            .preview-panel { grid-column: 1 / -1; }
+        }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel-header h2 {
+            font-size: 1rem;
+            color: #ffd700;
+        }
+
+        .section {
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section:last-child { border-bottom: none; }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px 10px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 5px;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .color-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-row input[type="color"] {
+            width: 40px;
+            height: 34px;
+            padding: 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .color-row input[type="text"] { flex: 1; }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .range-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: #fff;
+        }
+
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+        .btn-block { width: 100%; }
+        .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        /* Layout Presets */
+        .layout-presets {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .layout-btn {
+            padding: 10px 5px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .layout-btn:hover { border-color: rgba(255,215,0,0.5); }
+        .layout-btn.active {
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.1);
+        }
+
+        .layout-btn .grid-icon {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+
+        .layout-btn .grid-label {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed rgba(255,215,0,0.3);
+            border-radius: 10px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.1);
+        }
+
+        .drop-zone-icon { font-size: 2rem; margin-bottom: 8px; }
+        .drop-zone p { color: #888; font-size: 0.8rem; margin: 3px 0; }
+        .drop-zone input { display: none; }
+
+        /* Images List */
+        .images-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .image-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        .image-thumb {
+            width: 40px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #333;
+        }
+
+        .image-info { flex: 1; min-width: 0; }
+
+        .image-name {
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .image-name input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #fff;
+            padding: 2px 5px;
+            font-size: 0.75rem;
+            border-radius: 3px;
+        }
+
+        .image-name input:focus {
+            background: rgba(0,0,0,0.3);
+            border-color: #ffd700;
+        }
+
+        .image-actions button {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 3px;
+            font-size: 0.9rem;
+        }
+
+        .image-actions button:hover { color: #ff4757; }
+
+        /* Preview Panel */
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 15px;
+            overflow: auto;
+        }
+
+        .page-preview {
+            background: #fff;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .page-preview.portrait {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 8.5/11;
+        }
+
+        .page-preview.landscape {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 11/8.5;
+        }
+
+        .covers-container {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            padding: var(--page-margin);
+            gap: var(--cover-gap);
+        }
+
+        .cover-slot {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cover-slot.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 0.7rem;
+        }
+
+        .cover-image {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .cover-title {
+            background: var(--title-bg);
+            color: var(--title-color);
+            padding: var(--title-padding);
+            font-family: var(--title-font);
+            font-size: var(--title-size);
+            font-weight: var(--title-weight);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Page Navigation */
+        .page-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .page-nav button {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .page-nav button:hover { background: rgba(255,255,255,0.2); }
+        .page-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .page-info {
+            font-size: 0.9rem;
+            color: #ffd700;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .stat { color: #888; }
+        .stat strong { color: #ffd700; }
+
+        /* Checkbox */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .checkbox-item input { accent-color: #ffd700; }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 5px;
+            margin-top: 8px;
+            animation: slideIn 0.3s ease;
+            border-left: 3px solid #ffd700;
+            font-size: 0.85rem;
+        }
+
+        .toast.error { border-left-color: #e74c3c; }
+        .toast.success { border-left-color: #00b894; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: #1a1a2e;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            transition: width 0.3s;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 3px; }
+
+        /* Hidden */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Generador de Plantillas de Covers</h1>
+            <p>Crea hojas de catálogo con múltiples portadas - Tamaño Carta para Impresión</p>
+        </header>
+
+        <div class="main-layout">
+            <!-- Left Panel - Images -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🖼️ Imágenes</h2>
+                    <button class="btn btn-sm btn-danger" onclick="clearAllImages()">🗑️</button>
+                </div>
+
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <p><strong>Arrastra imágenes</strong></p>
+                    <p>JPG / PNG</p>
+                    <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/jpg">
+                </div>
+
+                <div class="stats-row" style="margin: 10px 0;">
+                    <div class="stat">Imágenes: <strong id="imgCount">0</strong></div>
+                    <div class="stat">Páginas: <strong id="pageCount">0</strong></div>
+                </div>
+
+                <div class="images-list" id="imagesList"></div>
+            </div>
+
+            <!-- Middle Panel - Settings -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>⚙️ Configuración</h2>
+                </div>
+
+                <!-- Layout -->
+                <div class="section">
+                    <div class="section-title">📐 Diseño de Página</div>
+                    
+                    <div class="form-row" style="margin-bottom:10px;">
+                        <div class="form-group">
+                            <label>Orientación</label>
+                            <select id="pageOrientation" onchange="updatePreview()">
+                                <option value="portrait">Vertical (Portrait)</option>
+                                <option value="landscape">Horizontal (Landscape)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Layout Personalizado</label>
+                            <select id="customLayout" onchange="applyCustomLayout()">
+                                <option value="">Seleccionar preset...</option>
+                                <option value="1x1">1×1 (1 por hoja)</option>
+                                <option value="1x2">1×2 (2 por hoja)</option>
+                                <option value="2x2">2×2 (4 por hoja)</option>
+                                <option value="2x3">2×3 (6 por hoja)</option>
+                                <option value="3x3">3×3 (9 por hoja)</option>
+                                <option value="3x4">3×4 (12 por hoja)</option>
+                                <option value="4x4">4×4 (16 por hoja)</option>
+                                <option value="4x5">4×5 (20 por hoja)</option>
+                                <option value="5x6">5×6 (30 por hoja)</option>
+                                <option value="6x8">6×8 (48 por hoja)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layout-presets" id="layoutPresets">
+                        <div class="layout-btn active" data-cols="2" data-rows="3" onclick="setLayout(2,3)">
+                            <div class="grid-icon">▦</div>
+                            <div class="grid-label">2×3</div>
+                        </div>
+                        <div class="layout-btn" data-cols="3" data-rows="4" onclick="setLayout(3,4)">
+                            <div class="grid-icon">▦</div>
+                            <div class="grid-label">3×4</div>
+                        </div>
+                        <div class="layout-btn" data-cols="4" data-rows="5" onclick="setLayout(4,5)">
+                            <div class="grid-icon">▦</div>
+                            <div class="grid-label">4×5</div>
+                        </div>
+                        <div class="layout-btn" data-cols="5" data-rows="6" onclick="setLayout(5,6)">
+                            <div class="grid-icon">▦</div>
+                            <div class="grid-label">5×6</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="margin-top:10px;">
+                        <div class="form-group">
+                            <label>Columnas: <span id="colsValue">2</span></label>
+                            <input type="range" id="gridCols" min="1" max="8" value="2" oninput="updateLayoutFromSliders()">
+                        </div>
+                        <div class="form-group">
+                            <label>Filas: <span id="rowsValue">3</span></label>
+                            <input type="range" id="gridRows" min="1" max="10" value="3" oninput="updateLayoutFromSliders()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Margins & Spacing -->
+                <div class="section">
+                    <div class="section-title">📏 Márgenes y Espaciado</div>
+                    
+                    <div class="form-group">
+                        <label>Margen de página: <span id="marginValue">10</span>mm</label>
+                        <input type="range" id="pageMargin" min="0" max="30" value="10" oninput="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Espacio entre covers: <span id="gapValue">5</span>mm</label>
+                        <input type="range" id="coverGap" min="0" max="20" value="5" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <!-- Title Style -->
+                <div class="section">
+                    <div class="section-title">✏️ Estilo del Título</div>
+
+                    <div class="checkbox-item" style="margin-bottom:10px;">
+                        <input type="checkbox" id="showTitle" checked onchange="updatePreview()">
+                        <label for="showTitle">Mostrar título</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fuente</label>
+                        <select id="titleFont" onchange="updatePreview()">
+                            <option value="Arial">Arial</option>
+                            <option value="Arial Black">Arial Black</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Impact">Impact</option>
+                            <option value="Courier New">Courier New</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tamaño: <span id="titleSizeValue">10</span>pt</label>
+                        <input type="range" id="titleSize" min="6" max="24" value="10" oninput="updatePreview()">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Color texto</label>
+                            <input type="color" id="titleColor" value="#ffffff" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Fondo título</label>
+                            <input type="color" id="titleBg" value="#000000" onchange="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="titleBold" checked onchange="updatePreview()">
+                            <label for="titleBold">Negrita</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="titleUpper" onchange="updatePreview()">
+                            <label for="titleUpper">MAYÚSCULAS</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:10px;">
+                        <label>Altura del título: <span id="titleHeightValue">15</span>%</label>
+                        <input type="range" id="titleHeight" min="8" max="30" value="15" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <!-- Page Style -->
+                <div class="section">
+                    <div class="section-title">🎨 Estilo de Página</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fondo página</label>
+                            <input type="color" id="pageBg" value="#ffffff" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Borde covers</label>
+                            <input type="color" id="coverBorder" value="#cccccc" onchange="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Grosor borde: <span id="borderWidthValue">1</span>px</label>
+                        <input type="range" id="borderWidth" min="0" max="5" value="1" oninput="updatePreview()">
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="showNumbers" onchange="updatePreview()">
+                        <label for="showNumbers">Mostrar números de página</label>
+                    </div>
+                </div>
+
+                <!-- Export -->
+                <div class="section">
+                    <div class="section-title">💾 Exportar</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Formato</label>
+                            <select id="exportFormat">
+                                <option value="jpeg">JPG</option>
+                                <option value="png">PNG</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Calidad: <span id="qualityValue">95</span>%</label>
+                            <input type="range" id="exportQuality" min="70" max="100" value="95" oninput="document.getElementById('qualityValue').textContent=this.value">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Prefijo archivo</label>
+                        <input type="text" id="filePrefix" value="catalogo_covers">
+                    </div>
+
+                    <div class="btn-group" style="margin-top:12px;">
+                        <button class="btn btn-primary btn-block" onclick="exportCurrentPage()">
+                            📄 Exportar Página Actual
+                        </button>
+                    </div>
+                    <div class="btn-group" style="margin-top:8px;">
+                        <button class="btn btn-success btn-block" onclick="exportAllPages()">
+                            📦 Exportar Todas las Páginas
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Preview -->
+            <div class="panel preview-panel">
+                <div class="panel-header">
+                    <h2>👁️ Vista Previa</h2>
+                    <span class="stat">Covers por página: <strong id="coversPerPage">6</strong></span>
+                </div>
+
+                <div class="preview-container">
+                    <div class="page-preview portrait" id="pagePreview">
+                        <div class="covers-container" id="coversContainer"></div>
+                    </div>
+                </div>
+
+                <div class="page-nav">
+                    <button onclick="prevPage()" id="prevBtn">◀ Anterior</button>
+                    <span class="page-info">
+                        Página <strong id="currentPageNum">1</strong> de <strong id="totalPages">1</strong>
+                    </span>
+                    <button onclick="nextPage()" id="nextBtn">Siguiente ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Modal -->
+    <div class="modal" id="progressModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px;">⏳ Generando...</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="progressText">Procesando...</p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Hidden Canvas -->
+    <canvas id="exportCanvas" style="display:none;"></canvas>
+
+    <script>
+        // Constants - Letter size at 300 DPI
+        const DPI = 300;
+        const LETTER_WIDTH_IN = 8.5;
+        const LETTER_HEIGHT_IN = 11;
+        const MM_PER_INCH = 25.4;
+
+        // State
+        let images = [];
+        let currentPage = 0;
+        let gridCols = 2;
+        let gridRows = 3;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupDropZone();
+            updatePreview();
+        });
+
+        // Toast
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Setup Drop Zone
+        function setupDropZone() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+                fileInput.value = '';
+            });
+        }
+
+        // Handle Files
+        function handleFiles(files) {
+            let count = 0;
+            Array.from(files).forEach(file => {
+                if (!file.type.match(/image\/(jpeg|png|jpg)/)) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const name = cleanFileName(file.name.replace(/\.[^/.]+$/, ''));
+                        images.push({
+                            id: Date.now() + Math.random(),
+                            name: name,
+                            image: img,
+                            dataUrl: e.target.result
+                        });
+                        count++;
+                        renderImagesList();
+                        updatePreview();
+                        updateStats();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            setTimeout(() => {
+                if (count > 0) showToast(`${count} imagen(es) cargadas`, 'success');
+            }, 500);
+        }
+
+        // Clean file name
+        function cleanFileName(name) {
+            return name
+                .replace(/[_-]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .replace(/^\d+\s*/, '')
+                .trim() || 'Sin título';
+        }
+
+        // Render images list
+        function renderImagesList() {
+            const list = document.getElementById('imagesList');
+            
+            if (images.length === 0) {
+                list.innerHTML = '<p style="color:#666;text-align:center;padding:20px;font-size:0.8rem;">No hay imágenes</p>';
+                return;
+            }
+
+            list.innerHTML = images.map((img, idx) => `
+                <div class="image-item" data-id="${img.id}">
+                    <img src="${img.dataUrl}" class="image-thumb" alt="">
+                    <div class="image-info">
+                        <div class="image-name">
+                            <input type="text" value="${escapeHtml(img.name)}" 
+                                   onchange="updateImageName('${img.id}', this.value)">
+                        </div>
+                    </div>
+                    <div class="image-actions">
+                        <button onclick="moveImage('${img.id}', -1)" title="Mover arriba">↑</button>
+                        <button onclick="moveImage('${img.id}', 1)" title="Mover abajo">↓</button>
+                        <button onclick="deleteImage('${img.id}')" title="Eliminar">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateImageName(id, name) {
+            const img = images.find(i => i.id == id);
+            if (img) {
+                img.name = name;
+                updatePreview();
+            }
+        }
+
+        function moveImage(id, direction) {
+            const idx = images.findIndex(i => i.id == id);
+            if (idx === -1) return;
+            
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= images.length) return;
+
+            [images[idx], images[newIdx]] = [images[newIdx], images[idx]];
+            renderImagesList();
+            updatePreview();
+        }
+
+        function deleteImage(id) {
+            images = images.filter(i => i.id != id);
+            renderImagesList();
+            updatePreview();
+            updateStats();
+        }
+
+        function clearAllImages() {
+            if (images.length === 0) return;
+            if (confirm('¿Eliminar todas las imágenes?')) {
+                images = [];
+                currentPage = 0;
+                renderImagesList();
+                updatePreview();
+                updateStats();
+                showToast('Imágenes eliminadas');
+            }
+        }
+
+        // Layout functions
+        function setLayout(cols, rows) {
+            gridCols = cols;
+            gridRows = rows;
+            
+            document.getElementById('gridCols').value = cols;
+            document.getElementById('gridRows').value = rows;
+            document.getElementById('colsValue').textContent = cols;
+            document.getElementById('rowsValue').textContent = rows;
+
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                btn.classList.toggle('active', 
+                    btn.dataset.cols == cols && btn.dataset.rows == rows);
+            });
+
+            currentPage = 0;
+            updatePreview();
+            updateStats();
+        }
+
+        function updateLayoutFromSliders() {
+            gridCols = parseInt(document.getElementById('gridCols').value);
+            gridRows = parseInt(document.getElementById('gridRows').value);
+            
+            document.getElementById('colsValue').textContent = gridCols;
+            document.getElementById('rowsValue').textContent = gridRows;
+
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                btn.classList.toggle('active', 
+                    btn.dataset.cols == gridCols && btn.dataset.rows == gridRows);
+            });
+
+            currentPage = 0;
+            updatePreview();
+            updateStats();
+        }
+
+        function applyCustomLayout() {
+            const select = document.getElementById('customLayout');
+            if (!select.value) return;
+            
+            const [cols, rows] = select.value.split('x').map(Number);
+            setLayout(cols, rows);
+            select.value = '';
+        }
+
+        // Get settings
+        function getSettings() {
+            return {
+                orientation: document.getElementById('pageOrientation').value,
+                cols: gridCols,
+                rows: gridRows,
+                pageMargin: parseInt(document.getElementById('pageMargin').value),
+                coverGap: parseInt(document.getElementById('coverGap').value),
+                showTitle: document.getElementById('showTitle').checked,
+                titleFont: document.getElementById('titleFont').value,
+                titleSize: parseInt(document.getElementById('titleSize').value),
+                titleColor: document.getElementById('titleColor').value,
+                titleBg: document.getElementById('titleBg').value,
+                titleBold: document.getElementById('titleBold').checked,
+                titleUpper: document.getElementById('titleUpper').checked,
+                titleHeight: parseInt(document.getElementById('titleHeight').value),
+                pageBg: document.getElementById('pageBg').value,
+                coverBorder: document.getElementById('coverBorder').value,
+                borderWidth: parseInt(document.getElementById('borderWidth').value),
+                showNumbers: document.getElementById('showNumbers').checked
+            };
+        }
+
+        // Update stats
+        function updateStats() {
+            const coversPerPage = gridCols * gridRows;
+            const totalPages = Math.max(1, Math.ceil(images.length / coversPerPage));
+            
+            document.getElementById('imgCount').textContent = images.length;
+            document.getElementById('pageCount').textContent = totalPages;
+            document.getElementById('coversPerPage').textContent = coversPerPage;
+            document.getElementById('totalPages').textContent = totalPages;
+            
+            // Update range labels
+            document.getElementById('marginValue').textContent = document.getElementById('pageMargin').value;
+            document.getElementById('gapValue').textContent = document.getElementById('coverGap').value;
+            document.getElementById('titleSizeValue').textContent = document.getElementById('titleSize').value;
+            document.getElementById('titleHeightValue').textContent = document.getElementById('titleHeight').value;
+            document.getElementById('borderWidthValue').textContent = document.getElementById('borderWidth').value;
+        }
+
+        // Update preview
+        function updatePreview() {
+            const settings = getSettings();
+            const coversPerPage = settings.cols * settings.rows;
+            const totalPages = Math.max(1, Math.ceil(images.length / coversPerPage));
+            
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+            if (currentPage < 0) currentPage = 0;
+
+            // Update page preview orientation
+            const pagePreview = document.getElementById('pagePreview');
+            pagePreview.className = `page-preview ${settings.orientation}`;
+            pagePreview.style.background = settings.pageBg;
+
+            // Calculate CSS variables for preview
+            const marginPercent = (settings.pageMargin / (settings.orientation === 'portrait' ? LETTER_WIDTH_IN : LETTER_HEIGHT_IN) / MM_PER_INCH) * 100;
+            const gapPercent = (settings.coverGap / (settings.orientation === 'portrait' ? LETTER_WIDTH_IN : LETTER_HEIGHT_IN) / MM_PER_INCH) * 100;
+
+            // Create covers grid
+            const container = document.getElementById('coversContainer');
+            container.style.cssText = `
+                display: grid;
+                grid-template-columns: repeat(${settings.cols}, 1fr);
+                grid-template-rows: repeat(${settings.rows}, 1fr);
+                padding: ${marginPercent}%;
+                gap: ${gapPercent}%;
+            `;
+
+            // Get images for current page
+            const startIdx = currentPage * coversPerPage;
+            const pageImages = images.slice(startIdx, startIdx + coversPerPage);
+
+            // Generate cover slots
+            let html = '';
+            for (let i = 0; i < coversPerPage; i++) {
+                const img = pageImages[i];
+                
+                if (img) {
+                    const titleText = settings.titleUpper ? img.name.toUpperCase() : img.name;
+                    html += `
+                        <div class="cover-slot" style="border: ${settings.borderWidth}px solid ${settings.coverBorder};">
+                            <div class="cover-image" style="background-image: url('${img.dataUrl}');"></div>
+                            ${settings.showTitle ? `
+                                <div class="cover-title" style="
+                                    background: ${settings.titleBg};
+                                    color: ${settings.titleColor};
+                                    font-family: '${settings.titleFont}', sans-serif;
+                                    font-size: ${settings.titleSize * 0.4}px;
+                                    font-weight: ${settings.titleBold ? 'bold' : 'normal'};
+                                    height: ${settings.titleHeight}%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    padding: 2px 4px;
+                                ">${escapeHtml(titleText)}</div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    html += `<div class="cover-slot empty" style="border: ${settings.borderWidth}px dashed ${settings.coverBorder};">Vacío</div>`;
+                }
+            }
+            container.innerHTML = html;
+
+            // Update navigation
+            document.getElementById('currentPageNum').textContent = currentPage + 1;
+            document.getElementById('totalPages').textContent = totalPages;
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages - 1;
+
+            updateStats();
+        }
+
+        // Page navigation
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePreview();
+            }
+        }
+
+        function nextPage() {
+            const settings = getSettings();
+            const coversPerPage = settings.cols * settings.rows;
+            const totalPages = Math.ceil(images.length / coversPerPage);
+            
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                updatePreview();
+            }
+        }
+
+        // Generate page on canvas
+        function generatePageCanvas(pageIndex, settings) {
+            return new Promise((resolve) => {
+                const canvas = document.getElementById('exportCanvas');
+                const ctx = canvas.getContext('2d');
+
+                // Set canvas size based on orientation
+                const isPortrait = settings.orientation === 'portrait';
+                const pageWidth = isPortrait ? LETTER_WIDTH_IN * DPI : LETTER_HEIGHT_IN * DPI;
+                const pageHeight = isPortrait ? LETTER_HEIGHT_IN * DPI : LETTER_WIDTH_IN * DPI;
+                
+                canvas.width = pageWidth;
+                canvas.height = pageHeight;
+
+                // Background
+                ctx.fillStyle = settings.pageBg;
+                ctx.fillRect(0, 0, pageWidth, pageHeight);
+
+                // Calculate dimensions
+                const marginPx = (settings.pageMargin / MM_PER_INCH) * DPI;
+                const gapPx = (settings.coverGap / MM_PER_INCH) * DPI;
+                
+                const contentWidth = pageWidth - (marginPx * 2);
+                const contentHeight = pageHeight - (marginPx * 2);
+                
+                const totalGapWidth = gapPx * (settings.cols - 1);
+                const totalGapHeight = gapPx * (settings.rows - 1);
+                
+                const coverWidth = (contentWidth - totalGapWidth) / settings.cols;
+                const coverHeight = (contentHeight - totalGapHeight) / settings.rows;
+                
+                const titleHeightPx = settings.showTitle ? (coverHeight * settings.titleHeight / 100) : 0;
+                const imageHeightPx = coverHeight - titleHeightPx;
+
+                // Get images for this page
+                const coversPerPage = settings.cols * settings.rows;
+                const startIdx = pageIndex * coversPerPage;
+                const pageImages = images.slice(startIdx, startIdx + coversPerPage);
+
+                let loadedCount = 0;
+                const totalToLoad = pageImages.filter(img => img).length;
+
+                if (totalToLoad === 0) {
+                    drawEmptySlots();
+                    resolve(canvas);
+                    return;
+                }
+
+                function drawEmptySlots() {
+                    for (let row = 0; row < settings.rows; row++) {
+                        for (let col = 0; col < settings.cols; col++) {
+                            const idx = row * settings.cols + col;
+                            if (idx >= pageImages.length || !pageImages[idx]) {
+                                const x = marginPx + (col * (coverWidth + gapPx));
+                                const y = marginPx + (row * (coverHeight + gapPx));
+                                
+                                ctx.strokeStyle = settings.coverBorder;
+                                ctx.lineWidth = settings.borderWidth;
+                                ctx.setLineDash([10, 5]);
+                                ctx.strokeRect(x, y, coverWidth, coverHeight);
+                                ctx.setLineDash([]);
+                            }
+                        }
+                    }
+                }
+
+                pageImages.forEach((img, idx) => {
+                    if (!img) return;
+
+                    const col = idx % settings.cols;
+                    const row = Math.floor(idx / settings.cols);
+                    const x = marginPx + (col * (coverWidth + gapPx));
+                    const y = marginPx + (row * (coverHeight + gapPx));
+
+                    // Draw image (cover fit)
+                    const imgRatio = img.image.width / img.image.height;
+                    const slotRatio = coverWidth / imageHeightPx;
+                    
+                    let drawWidth, drawHeight, drawX, drawY;
+                    
+                    if (imgRatio > slotRatio) {
+                        drawHeight = imageHeightPx;
+                        drawWidth = drawHeight * imgRatio;
+                        drawX = x + (coverWidth - drawWidth) / 2;
+                        drawY = y;
+                    } else {
+                        drawWidth = coverWidth;
+                        drawHeight = drawWidth / imgRatio;
+                        drawX = x;
+                        drawY = y + (imageHeightPx - drawHeight) / 2;
+                    }
+
+                    // Clip to cover area
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(x, y, coverWidth, imageHeightPx);
+                    ctx.clip();
+                    ctx.drawImage(img.image, drawX, drawY, drawWidth, drawHeight);
+                    ctx.restore();
+
+                    // Draw title
+                    if (settings.showTitle) {
+                        const titleY = y + imageHeightPx;
+                        
+                        ctx.fillStyle = settings.titleBg;
+                        ctx.fillRect(x, titleY, coverWidth, titleHeightPx);
+
+                        const titleText = settings.titleUpper ? img.name.toUpperCase() : img.name;
+                        const fontWeight = settings.titleBold ? 'bold' : 'normal';
+                        const fontSize = settings.titleSize * (DPI / 72); // Convert pt to px at DPI
+
+                        ctx.font = `${fontWeight} ${fontSize}px "${settings.titleFont}"`;
+                        ctx.fillStyle = settings.titleColor;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+
+                        // Truncate text if too long
+                        let displayText = titleText;
+                        while (ctx.measureText(displayText).width > coverWidth - 10 && displayText.length > 3) {
+                            displayText = displayText.slice(0, -4) + '...';
+                        }
+
+                        ctx.fillText(displayText, x + coverWidth / 2, titleY + titleHeightPx / 2);
+                    }
+
+                    // Draw border
+                    if (settings.borderWidth > 0) {
+                        ctx.strokeStyle = settings.coverBorder;
+                        ctx.lineWidth = settings.borderWidth;
+                        ctx.strokeRect(x, y, coverWidth, coverHeight);
+                    }
+
+                    loadedCount++;
+                    if (loadedCount === totalToLoad) {
+                        drawEmptySlots();
+                        
+                        // Page number
+                        if (settings.showNumbers) {
+                            const totalPages = Math.ceil(images.length / coversPerPage);
+                            ctx.font = `12px Arial`;
+                            ctx.fillStyle = '#666';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(`Página ${pageIndex + 1} de ${totalPages}`, pageWidth / 2, pageHeight - marginPx / 2);
+                        }
+                        
+                        resolve(canvas);
+                    }
+                });
+            });
+        }
+
+        // Export current page
+        async function exportCurrentPage() {
+            if (images.length === 0) {
+                showToast('No hay imágenes', 'error');
+                return;
+            }
+
+            const settings = getSettings();
+            const canvas = await generatePageCanvas(currentPage, settings);
+            downloadCanvas(canvas, currentPage + 1);
+            showToast('Página exportada', 'success');
+        }
+
+        // Export all pages
+        async function exportAllPages() {
+            if (images.length === 0) {
+                showToast('No hay imágenes', 'error');
+                return;
+            }
+
+            const settings = getSettings();
+            const coversPerPage = settings.cols * settings.rows;
+            const totalPages = Math.ceil(images.length / coversPerPage);
+
+            const modal = document.getElementById('progressModal');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            modal.classList.add('active');
+
+            for (let i = 0; i < totalPages; i++) {
+                progressText.textContent = `Generando página ${i + 1} de ${totalPages}...`;
+                progressFill.style.width = `${((i + 1) / totalPages) * 100}%`;
+
+                const canvas = await generatePageCanvas(i, settings);
+                await downloadCanvas(canvas, i + 1);
+                
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            modal.classList.remove('active');
+            showToast(`${totalPages} página(s) exportada(s)`, 'success');
+        }
+
+        // Download canvas
+        function downloadCanvas(canvas, pageNum) {
+            return new Promise(resolve => {
+                const format = document.getElementById('exportFormat').value;
+                const quality = parseInt(document.getElementById('exportQuality').value) / 100;
+                const prefix = document.getElementById('filePrefix').value || 'catalogo';
+                const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+                const ext = format === 'png' ? 'png' : 'jpg';
+
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${prefix}_pagina_${pageNum}.${ext}`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    resolve();
+                }, mimeType, quality);
+            });
+        }
+    </script>
+</body>
+</html>
